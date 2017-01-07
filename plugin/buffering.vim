@@ -3,7 +3,7 @@ if !has('python')
   finish
 endif
 
-function! OpenBuffering()
+function! BufferingOpen()
 python << EOF
 buffers = get_open_buffers()
 open_buffering(buffers)
@@ -14,6 +14,13 @@ function! BufferingDeleteBuffer()
 python << EOF
 delete_buffer()
 vim.command("call RefreshBuffering()")
+EOF
+endfunction
+
+function! BufferingDeleteAllBuffers()
+python << EOF
+delete_all_buffers()
+print "All buffers deleted"
 EOF
 endfunction
 
@@ -44,8 +51,6 @@ def open_buffering(buffer_names):
     vim.command('rightbelow split {0}'.format('buffering'))
     vim.command('normal! ggdG')
     vim.command('setlocal buftype=nowrite')
-    vim.command('nnoremap <leader>dd :call BufferingDeleteBuffer()<CR>')
-    vim.command('nnoremap <leader>do :call BufferingOpenBuffer()<CR>')
     vim.command('call append(0, {0})'.format(buffer_names))
     vim.command('normal! gg')
 
@@ -69,6 +74,16 @@ def delete_buffer():
   if buffer_name_to_delete != '':
     vim.command('bd {}'.format(buffer_name_to_delete))
     print 'Deleted: {}'.format(buffer_name_to_delete)
+
+def delete_all_buffers():
+  if vim.eval('bufname("{}")'.format(vim.current.buffer.name)) != "buffering":
+    return
+
+  buffers = get_open_buffers()
+  for buffer in buffers:
+    vim.command('bd! {}'.format(buffer))
+
+  vim.command('bd %')
 
 def refresh_buffering():
   if vim.eval('bufname("{}")'.format(vim.current.buffer.name)) != "buffering":
@@ -105,5 +120,3 @@ endfunction
 "::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 call DefPython()
-
-command! OB call OpenBuffering()
