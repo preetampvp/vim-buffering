@@ -1,0 +1,3 @@
+### OpenBuffer
+
+`nnoremap <leader>B`
