@@ -1,24 +1,32 @@
-if !has('python')
-  echo "Error: Required vim compiled with +python"
+if !has('python') && !has('python3')
+  echo "Error: Required vim compiled with +python or +python3"
   finish
 endif
 
+if has('python')
+  let g:_vbpy=":python"
+endif
+
+if has('python3')
+  let g:_vbpy=":python3"
+endif
+
 function! BufferingOpen()
-python << EOF
+g:_vbpy << EOF
 buffers = get_open_buffers()
 open_buffering(buffers)
 EOF
 endfunction
 
 function! BufferingDeleteBuffer()
-python << EOF
+g:_vbpy << EOF
 delete_buffer()
 vim.command("call RefreshBuffering()")
 EOF
 endfunction
 
 function! BufferingDeleteAllBuffers()
-python << EOF
+g:_vbpy << EOF
 delete_all_buffers()
 print "All buffers deleted"
 EOF
@@ -26,13 +34,13 @@ endfunction
 
 
 function! RefreshBuffering()
-python << EOF
+g:_vbpy << EOF
 refresh_buffering()
 EOF
 endfunction
 
 function! BufferingOpenBuffer()
-python << EOF
+g:_vbpy << EOF
 open_buffer()
 EOF
 endfunction
@@ -41,7 +49,7 @@ endfunction
 "::::::::::::: Init all python stuff :::::::::::
 ":::::::::::::::::::::::::::::::::::::::::::::::
 function! DefPython()
-python << EOF
+g:_vbpy << EOF
 
 import sys
 import vim
